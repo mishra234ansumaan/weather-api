@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; background: #f0f0f0; }
+        .weather-card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; width: 300px; }
+        .search-container { display: flex; margin-bottom: 20px; }
+        #city-input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px 0 0 5px; }
+        #search-btn { padding: 10px 15px; border: none; background-color: #007bff; color: white; border-radius: 0 5px 5px 0; cursor: pointer; }
+        #city-name { font-size: 24px; margin: 0; }
+        #temperature { font-size: 48px; margin: 10px 0; }
+        #description { margin: 5px 0 0; text-transform: capitalize; }
+    </style>
+</head>
+<body>
+
+    <div class="weather-card">
+        <div class="search-container">
+            <input type="text" id="city-input" placeholder="Enter city name...">
+            <button id="search-btn">Search</button>
+        </div>
+        <div class="weather-info">
+            <h2 id="city-name">London</h2>
+            <p id="temperature">--°C</p>
+            <p id="description">sunny</p>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "1f924a79ecb54118b4c165509252909";
+        const cityInput = document.getElementById("city-input");
+        const searchBtn = document.getElementById("search-btn");
+
+        const cityNameElem = document.getElementById("city-name");
+        const temperatureElem = document.getElementById("temperature");
+        const descriptionElem = document.getElementById("description");
+
+        const getWeather = async (city) => {
+            if (!city) {
+                alert("Please enter a city name.");
+                return;
+            }
+            
+            const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('City not found');
+                }
+                const data = await response.json();
+
+                cityNameElem.textContent = data.location.name;
+                temperatureElem.textContent = `${data.current.temp_c}°C`;
+                descriptionElem.textContent = data.current.condition.text;
+            } catch (error) {
+                alert(error.message);
+                cityNameElem.textContent = "City Not Found";
+                temperatureElem.textContent = "--°C";
+                descriptionElem.textContent = "enter a valid city";
+            }
+        };
+
+        searchBtn.addEventListener("click", () => {
+            getWeather(cityInput.value.trim());
+        });
+
+        // Load default weather for London on page load
+        window.addEventListener("load", () => {
+            getWeather("London");
+        });
+    </script>
+
+</body>
+</html>
